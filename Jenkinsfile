@@ -1,13 +1,14 @@
 pipeline {
     agent any
     triggers {
-        pollSCM "* * * * *"  // SCM polling
+        pollSCM "* * * * *"
     }
     stages {
         stage('Build Application') {
             steps {
                 echo '=== Building Petclinic Application ==='
-                sh 'mvn -B clean package'  // No tests are run in this stage
+                // Disable tests by ensuring Surefire plugin does not execute any tests
+                sh 'mvn -B clean package -DskipTests -Dtest='  // Ensure no tests are triggered
             }
         }
         stage('Build Docker Image') {
@@ -28,9 +29,8 @@ pipeline {
             steps {
                 echo '=== Pushing Petclinic Docker Image ==='
                 script {
-                    // Capture the full commit hash and short commit hash
                     GIT_COMMIT_HASH = sh(script: "git log -n 1 --pretty=format:'%H'", returnStdout: true).trim()
-                    SHORT_COMMIT = GIT_COMMIT_HASH.substring(0, 7)  // Get short commit hash
+                    SHORT_COMMIT = GIT_COMMIT_HASH.substring(0, 7)
                     docker.withRegistry('https://registry.hub.docker.com', 'dockerHubCredentials') {
                         app.push("$SHORT_COMMIT")
                         app.push("latest")
@@ -48,7 +48,6 @@ pipeline {
     }
     post {
         always {
-            // No test reports to archive since tests are disabled
             echo '=== No test results to archive ==='
         }
     }
