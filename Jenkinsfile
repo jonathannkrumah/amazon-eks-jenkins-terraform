@@ -1,23 +1,13 @@
-
 pipeline {
     agent any
     triggers {
-        pollSCM "* * * * *"
+        pollSCM "* * * * *"  // SCM polling
     }
     stages {
         stage('Build Application') {
             steps {
                 echo '=== Building Petclinic Application ==='
-                sh 'mvn -B -DskipTests clean package' // Ensure tests are skipped here
-            }
-        }
-        stage('Test Application') {
-            steps {
-                echo '=== Testing Petclinic Application ==='
-                sh '''
-                    export MAVEN_OPTS="$MAVEN_OPTS"
-                    mvn test -DskipTests -Dsurefire.useSystemClassLoader=false
-                '''  // Add -DskipTests to this command as well
+                sh 'mvn -B clean package'  // No tests are run in this stage
             }
         }
         stage('Build Docker Image') {
@@ -38,8 +28,9 @@ pipeline {
             steps {
                 echo '=== Pushing Petclinic Docker Image ==='
                 script {
-                    GIT_COMMIT_HASH = sh (script: "git log -n 1 --pretty=format:'%H'", returnStdout: true)
-                    SHORT_COMMIT = "${GIT_COMMIT_HASH[0..7]}"
+                    // Capture the full commit hash and short commit hash
+                    GIT_COMMIT_HASH = sh(script: "git log -n 1 --pretty=format:'%H'", returnStdout: true).trim()
+                    SHORT_COMMIT = GIT_COMMIT_HASH.substring(0, 7)  // Get short commit hash
                     docker.withRegistry('https://registry.hub.docker.com', 'dockerHubCredentials') {
                         app.push("$SHORT_COMMIT")
                         app.push("latest")
@@ -50,15 +41,15 @@ pipeline {
         stage('Remove local images') {
             steps {
                 echo '=== Delete the local docker images ==='
-                sh("docker rmi -f ibuchh/petclinic-spinnaker-jenkins:latest || :")
-                sh("docker rmi -f ibuchh/petclinic-spinnaker-jenkins:$SHORT_COMMIT || :")
+                sh "docker rmi -f jonathannkrumah/amazon-eks-jenkins-terraform:latest || :"
+                sh "docker rmi -f jonathannkrumah/amazon-eks-jenkins-terraform:$SHORT_COMMIT || :"
             }
         }
     }
     post {
         always {
-            junit 'target/surefire-reports/*.xml'
+            // No test reports to archive since tests are disabled
+            echo '=== No test results to archive ==='
         }
     }
 }
-
