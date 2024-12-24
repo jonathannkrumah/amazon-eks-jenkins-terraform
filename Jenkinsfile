@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
     triggers {
@@ -27,7 +28,7 @@ pipeline {
                 echo '=== Building Petclinic Docker Image ==='
                 script {
                     app = docker.build("jonathannkrumah/amazon-eks-jenkins-terraform")
-    
+                }
             }
         }
         stage('Push Docker Image') {
@@ -60,3 +61,4 @@ pipeline {
         }
     }
 }
+
