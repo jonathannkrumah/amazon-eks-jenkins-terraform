@@ -230,7 +230,7 @@
   <repositories>
       <repository>
     <id>my-custom-repository</id>
-    <url>https://my.custom.repo/repository</url>
+    <url>https://https://github.com/jonathannkrumah/amazon-eks-jenkins-terraform.git</url>
   </repository>
 
     <repository>
