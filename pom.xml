@@ -228,6 +228,11 @@
   </licenses>
 
   <repositories>
+      <repository>
+    <id>my-custom-repository</id>
+    <url>https://my.custom.repo/repository</url>
+  </repository>
+
     <repository>
       <id>spring-snapshots</id>
       <name>Spring Snapshots</name>
