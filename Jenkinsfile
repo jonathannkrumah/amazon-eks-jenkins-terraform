@@ -1,26 +1,37 @@
 pipeline {
     agent any
-       triggers {
+    
+    triggers {
         pollSCM "* * * * *"
-       }
+    }
+    
+    environment {
+        MAVEN_OPTS = '-Xmx2048m -XX:MaxPermSize=256m'
+    }
+    
     stages {
-        stage('Build Application') { 
+        stage('Build Application') {
             steps {
                 echo '=== Building Petclinic Application ==='
-                sh 'mvn -B -DskipTests clean package' 
+                sh 'mvn -B -DskipTests clean package'
             }
         }
+        
         stage('Test Application') {
             steps {
                 echo '=== Testing Petclinic Application ==='
-                sh 'mvn test'
+                sh '''
+                    export MAVEN_OPTS="$MAVEN_OPTS"
+                    mvn test -Dsurefire.useSystemClassLoader=false
+                '''
             }
             post {
                 always {
-                    junit 'target/surefire-reports/*.xml'
+                    junit '**/target/surefire-reports/*.xml'
                 }
             }
         }
+        
         stage('Build Docker Image') {
             when {
                 branch 'master'
@@ -28,10 +39,11 @@ pipeline {
             steps {
                 echo '=== Building Petclinic Docker Image ==='
                 script {
-                    app = docker.build("jonathannkrumah/amazon-eks-jenkins-terraform.git")
+                    app = docker.build("ibuchh/petclinic-spinnaker-jenkins")
                 }
             }
         }
+        
         stage('Push Docker Image') {
             when {
                 branch 'master'
@@ -39,21 +51,34 @@ pipeline {
             steps {
                 echo '=== Pushing Petclinic Docker Image ==='
                 script {
-                    GIT_COMMIT_HASH = sh (script: "git log -n 1 --pretty=format:'%H'", returnStdout: true)
+                    GIT_COMMIT_HASH = sh(script: "git log -n 1 --pretty=format:'%H'", returnStdout: true)
                     SHORT_COMMIT = "${GIT_COMMIT_HASH[0..7]}"
                     docker.withRegistry('https://registry.hub.docker.com', 'dockerHubCredentials') {
-                        app.push("$SHORT_COMMIT")
+                        app.push("${SHORT_COMMIT}")
                         app.push("latest")
                     }
                 }
             }
         }
+        
         stage('Remove local images') {
             steps {
                 echo '=== Delete the local docker images ==='
-                sh("docker rmi -f ibuchh/petclinic-spinnaker-jenkins:latest || :")
-                sh("docker rmi -f ibuchh/petclinic-spinnaker-jenkins:$SHORT_COMMIT || :")
+                script {
+                    try {
+                        sh "docker rmi -f ibuchh/petclinic-spinnaker-jenkins:latest"
+                        sh "docker rmi -f ibuchh/petclinic-spinnaker-jenkins:${SHORT_COMMIT}"
+                    } catch (Exception e) {
+                        echo 'Image removal failed, continuing pipeline'
+                    }
+                }
             }
+        }
+    }
+    
+    post {
+        always {
+            cleanWs()
         }
     }
 }
