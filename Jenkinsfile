@@ -6,7 +6,7 @@ pipeline {
     }
     
     environment {
-        MAVEN_OPTS = '-Xmx2048m -XX:MaxPermSize=256m'
+        MAVEN_OPTS = '-Xmx2048m -XX:MaxMetaspaceSize=512m'
     }
     
     stages {
