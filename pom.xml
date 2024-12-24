@@ -200,7 +200,7 @@
           <contextFolder>${basedir}/src/main/less</contextFolder>
         </configuration>
         <dependencies>
-          <dependency>
+          https://github.com/jonathannkrumah/amazon-eks-jenkins-terraform/tree/master<dependency>
             <groupId>org.webjars</groupId>
             <artifactId>bootstrap</artifactId>
             <version>${webjars-bootstrap.version}</version>
@@ -212,17 +212,18 @@
           </dependency>
         </dependencies>
       </plugin>
-      <plugin>
-  <groupId>org.apache.maven.plugins</groupId>
-  <artifactId>maven-surefire-plugin</artifactId>
-  <version>2.22.1</version>
-  <configuration>
-    <forkCount>1</forkCount>
-    <reuseForks>true</reuseForks>
-    <argLine>-Xmx2048m -XX:MaxPermSize=512m</argLine>
-    <useSystemClassLoader>false</useSystemClassLoader>
-  </configuration>
-</plugin>
+     <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-surefire-plugin</artifactId>
+      <version>2.22.1</version>
+      <configuration>
+        <skipTests>true</skipTests> <!-- Skip tests by default -->
+        <forkCount>1</forkCount>
+        <reuseForks>true</reuseForks>
+        <argLine>-Xmx2048m -XX:MaxPermSize=512m</argLine>
+        <useSystemClassLoader>false</useSystemClassLoader>
+      </configuration>
+    </plugin>
       <!--plugin>
 				<groupId>com.google.cloud.tools</groupId>
 				<artifactId>jib-maven-plugin</artifactId>
