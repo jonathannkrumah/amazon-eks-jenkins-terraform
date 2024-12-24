@@ -1,9 +1,8 @@
-
 pipeline {
     agent any
-       triggers {
+    triggers {
         pollSCM "* * * * *"
-       }
+    }
     stages {
         stage('Build Application') {
             steps {
@@ -19,12 +18,6 @@ pipeline {
                     mvn test -DskipTests -Dsurefire.useSystemClassLoader=false
                 '''  // Add -DskipTests to this command as well
             }
-            }
-            post {
-                always {
-                    junit 'target/surefire-reports/*.xml'
-                }
-            }
         }
         stage('Build Docker Image') {
             when {
@@ -33,8 +26,8 @@ pipeline {
             steps {
                 echo '=== Building Petclinic Docker Image ==='
                 script {
-                    app = docker.build("ibuchh/petclinic-spinnaker-jenkins")
-                }
+                    app = docker.build("jonathannkrumah/amazon-eks-jenkins-terraform")
+    
             }
         }
         stage('Push Docker Image') {
@@ -61,3 +54,9 @@ pipeline {
             }
         }
     }
+    post {
+        always {
+            junit 'target/surefire-reports/*.xml'
+        }
+    }
+}
