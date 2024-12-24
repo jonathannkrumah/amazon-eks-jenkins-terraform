@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     triggers {
-        pollSCM "* * * * *"
+        pollSCM('H/5 * * * *') // Adjust polling frequency to every 5 minutes
     }
     
     environment {
@@ -27,6 +27,7 @@ pipeline {
             }
             post {
                 always {
+                    echo '=== Publishing Test Results ==='
                     junit '**/target/surefire-reports/*.xml'
                 }
             }
@@ -51,25 +52,28 @@ pipeline {
             steps {
                 echo '=== Pushing Petclinic Docker Image ==='
                 script {
-                    GIT_COMMIT_HASH = sh(script: "git log -n 1 --pretty=format:'%H'", returnStdout: true)
-                    SHORT_COMMIT = "${GIT_COMMIT_HASH[0..7]}"
+                    def gitCommitHash = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
+                    def shortCommit = gitCommitHash.take(7)
                     docker.withRegistry('https://registry.hub.docker.com', 'dockerHubCredentials') {
-                        app.push("${SHORT_COMMIT}")
+                        app.push("${shortCommit}")
                         app.push("latest")
                     }
                 }
             }
         }
         
-        stage('Remove local images') {
+        stage('Remove Local Images') {
+            when {
+                branch 'master'
+            }
             steps {
-                echo '=== Delete the local docker images ==='
+                echo '=== Deleting Local Docker Images ==='
                 script {
                     try {
-                        sh "docker rmi -f ibuchh/petclinic-spinnaker-jenkins:latest"
-                        sh "docker rmi -f ibuchh/petclinic-spinnaker-jenkins:${SHORT_COMMIT}"
+                        sh "docker rmi -f ibuchh/petclinic-spinnaker-jenkins:latest || true"
+                        sh "docker rmi -f ibuchh/petclinic-spinnaker-jenkins:${shortCommit} || true"
                     } catch (Exception e) {
-                        echo 'Image removal failed, continuing pipeline'
+                        echo 'Image removal failed, but continuing pipeline execution'
                     }
                 }
             }
@@ -78,6 +82,7 @@ pipeline {
     
     post {
         always {
+            echo '=== Cleaning Workspace ==='
             cleanWs()
         }
     }
