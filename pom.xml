@@ -355,6 +355,7 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
+
   <plugin>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-surefire-plugin</artifactId>
@@ -385,6 +386,5 @@
             </goals>
         </execution>
     </executions>
-</plugin>
 
 </project>
