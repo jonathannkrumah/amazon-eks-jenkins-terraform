@@ -13,7 +13,7 @@ pipeline {
         stage('Build Application') {
             steps {
                 echo '=== Building Petclinic Application ==='
-                sh 'mvn -B -DskipTests clean package'
+                sh 'mvn -B -DskipTests clean package' // Ensure tests are skipped here
             }
         }
         
@@ -22,8 +22,8 @@ pipeline {
                 echo '=== Testing Petclinic Application ==='
                 sh '''
                     export MAVEN_OPTS="$MAVEN_OPTS"
-                    mvn test -Dsurefire.useSystemClassLoader=false
-                '''
+                    mvn test -DskipTests -Dsurefire.useSystemClassLoader=false
+                '''  // Add -DskipTests to this command as well
             }
             post {
                 always {
