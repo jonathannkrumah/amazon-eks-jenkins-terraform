@@ -14,7 +14,6 @@
   <name>petclinic</name>
 
   <properties>
-
     <!-- Generic properties -->
     <java.version>1.8</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -27,10 +26,8 @@
     <wro4j.version>1.8.0</wro4j.version>
 
     <jacoco.version>0.8.2</jacoco.version>
-    <!-- Added by Irshad -->
     <imagetag>${git.commit.id.abbrev}</imagetag>
     <maven.build.timestamp.format>yyyyMMdd-HHmmssSSS</maven.build.timestamp.format>
-
   </properties>
 
   <dependencies>
@@ -73,7 +70,7 @@
       <scope>runtime</scope>
     </dependency>
 
-    <!-- caching -->
+    <!-- Caching -->
     <dependency>
       <groupId>javax.cache</groupId>
       <artifactId>cache-api</artifactId>
@@ -83,7 +80,7 @@
       <artifactId>ehcache</artifactId>
     </dependency>
 
-    <!-- webjars -->
+    <!-- Webjars -->
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>webjars-locator-core</artifactId>
@@ -103,12 +100,24 @@
       <artifactId>bootstrap</artifactId>
       <version>${webjars-bootstrap.version}</version>
     </dependency>
-    <!-- end of webjars -->
 
+    <!-- Optional DevTools -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
       <optional>true</optional>
+    </dependency>
+
+    <!-- Additional dependencies -->
+    <dependency>
+      <groupId>com.example</groupId>
+      <artifactId>amazon-eks-jenkins-terraform</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
     </dependency>
   </dependencies>
 
@@ -119,8 +128,6 @@
         <artifactId>spring-boot-maven-plugin</artifactId>
         <executions>
           <execution>
-            <!-- Spring Boot Actuator displays build-related information
-              if a META-INF/build-info.properties file is present -->
             <goals>
               <goal>build-info</goal>
             </goals>
@@ -155,8 +162,6 @@
         </executions>
       </plugin>
 
-      <!-- Spring Boot Actuator displays build-related information if a git.properties
-        file is present at the classpath -->
       <plugin>
         <groupId>pl.project13.maven</groupId>
         <artifactId>git-commit-id-plugin</artifactId>
@@ -174,8 +179,7 @@
           <verbose>true</verbose>
           <dateFormat>yyyy-MM-dd'T'HH:mm:ssZ</dateFormat>
           <generateGitPropertiesFile>true</generateGitPropertiesFile>
-          <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties
-          </generateGitPropertiesFilename>
+          <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
           <failOnNoGitDirectory>false</failOnNoGitDirectory>
         </configuration>
       </plugin>
@@ -199,122 +203,23 @@
           <extraConfigFile>${basedir}/src/main/wro/wro.properties</extraConfigFile>
           <contextFolder>${basedir}/src/main/less</contextFolder>
         </configuration>
-	      
-    <dependency>
-        <groupId>org.webjars</groupId>
-        <artifactId>bootstrap</artifactId>
-        <version>${webjars-bootstrap.version}</version>
-    </dependency>
-
-    <!-- If you want to reference an external dependency, make sure to define it correctly -->
-    <!-- Example of adding a custom dependency (adjust with actual groupId, artifactId, version) -->
-    <dependency>
-        <groupId>com.example</groupId>
-        <artifactId>amazon-eks-jenkins-terraform</artifactId>
-        <version>1.0.0</version>
-    </dependency>
-          <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>${mockito.version}</version>
-          </dependency>
-        </dependencies>
       </plugin>
-     <plugin>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-surefire-plugin</artifactId>
-      <version>2.22.1</version>
-      <configuration>
-        <skipTests>true</skipTests> <!-- Skip tests by default -->
-        <forkCount>1</forkCount>
-        <reuseForks>true</reuseForks>
-        <argLine>-Xmx2048m -XX:MaxPermSize=512m</argLine>
-        <useSystemClassLoader>false</useSystemClassLoader>
-      </configuration>
-    </plugin>
-      <!--plugin>
-				<groupId>com.google.cloud.tools</groupId>
-				<artifactId>jib-maven-plugin</artifactId>
-				<version>0.9.7</version>
-				<configuration>
-					<to>
-						<image>registry.hub.docker.com/eddiewebb/circleci-k8s-demo:${version}-b${build.number}</image>
-					</to>
-					<container>
-						<jvmFlags>
-							<jvmFlag>-Dcircle_build_num=${build.number}</jvmFlag>
-							<jvmFlag>-Dcircle_commit=${commit.hash}</jvmFlag>
-							<jvmFlag>-Dcircle_user=${build.user}</jvmFlag>
-							<jvmFlag>-Dcircle_repo=${build.repo}</jvmFlag>
-							<jvmFlag>-Dcircle_workflow_guid=${circle.workflow}</jvmFlag>
-						</jvmFlags>
-						<ports>
-							<port>8080</port>
-						</ports>
-					</container>
-				</configuration>
-			</plugin-->
-      <!--plugin>
-        <groupId>com.google.cloud.tools</groupId>
-        <artifactId>jib-maven-plugin</artifactId>
-        <version>${jib.plugin.version}</version>
-        <configuration>
-          <to>
-            <image>${jib.image.repository}/${project.artifactId}-${maven.build.timestamp.format}</image>
-            <tags>
-              <tag>${project.version}</tag>
-              <tag>${imagetag}</tag>
-              <tag>latest</tag>
-            </tags>
-          </to>
-          <container>
-            <jvmFlags>
-              <jvmFlag>-Dcircle_build_num=${build.number}</jvmFlag>
-            </jvmFlags>
-            <useCurrentTimestamp>true</useCurrentTimestamp>
-          </container>
-          <mainClass>${main.class}</mainClass>
-        </configuration>
-      </plugin-->
-      <!--plugin>
-        <groupId>com.spotify</groupId>
-        <artifactId>dockerfile-maven-plugin</artifactId>
-        <version>1.4.9</version>
-        <executions>
-          <execution>
-            <id>tag-latest</id>
-            <phase>package</phase>
-            <goals>
-              <goal>build</goal>
-              <goal>tag</goal>
-              <goal>push</goal>
-            </goals>
-            <configuration>
-              <tag>latest</tag>
-            </configuration>
-          </execution>
-          <execution>
-            <id>tag-version</id>
-            <phase>package</phase>
-            <goals>
-              <goal>build</goal>
-              <goal>tag</goal>
-              <goal>push</goal>
-            </goals>
-            <configuration>
-              <tag>${git.commit.id.abbrev}</tag>
-            </configuration>
-          </execution>
-        </executions>
-        <configuration>
-          <repository>ibuchh/spring-petclinic</repository>
-        </configuration>
-      </plugin-->
 
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.22.1</version>
+        <configuration>
+          <skipTests>true</skipTests>
+          <forkCount>1</forkCount>
+          <reuseForks>true</reuseForks>
+          <argLine>-Xmx2048m -XX:MaxPermSize=512m</argLine>
+          <useSystemClassLoader>false</useSystemClassLoader>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
-  <!-- Apache 2 license -->
   <licenses>
     <license>
       <name>Apache License, Version 2.0</name>
@@ -359,5 +264,4 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
-
 </project>
