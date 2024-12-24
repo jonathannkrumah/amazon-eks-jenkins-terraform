@@ -228,10 +228,10 @@
   </licenses>
 
   <repositories>
-      <repository>
-    <id>my-custom-repository</id>
-    <url>https://https://github.com/jonathannkrumah/amazon-eks-jenkins-terraform.git</url>
-  </repository>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
 
     <repository>
       <id>spring-snapshots</id>
