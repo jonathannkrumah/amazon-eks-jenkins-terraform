@@ -5,7 +5,7 @@ sudo yum -y update
 
 echo "Install Java JDK 8"
 yum remove -y java
-yum install -y java-1.8.0-openjdk
+yum install -y java-17-amazon-corretto
 
 echo "Install Maven"
 yum install -y maven 
